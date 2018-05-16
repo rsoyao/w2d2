@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <%- include partials/_header.ejs %>
 </head>
 <body>
-  <p><%= shortURL %></p>
-  <p><%= longURL %></p>
+  <h1>Edit your URL here my dude!</h1>
+  <a href="/urls">Take me back to where I just was please</a>
+  <h2>Edit URL</h2>
+
+  <form method="POST" action="/urls/<%= shortURL %>">
+    <label for="name">URL: </label>
+      <input id="name" name="longURL" type="text" value="<%= shortURL %>" />
+      <input type="submit" value="Update" />
+  </form>
 </body>
 </html>
-
-
-<!-- */ Create a new template file inside the views directory called urls_show.ejs.
-Add a new route in express_server.js which you'll use to render this new template. Use the example below for what this will look like.
-Fill out the urls_show.ejs template to display the following: The full URL and its shortened form. */
- -->

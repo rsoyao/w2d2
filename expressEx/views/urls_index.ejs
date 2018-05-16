@@ -4,15 +4,35 @@
   <%- include partials/_header.ejs %>
 </head>
 <body>
-  <ul>
-      <% for(let key in urls) { %>
-      <li><%= key %></li>
-      <li><%= urls[key] %></li>
-      <% } %>
-  </ul>
-  <a href="www.urlshorten.com">Shorten your URL today!!</a>
+  <h1>A List of URL's for your viewing pleasure</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Short</th>
+        <th>Long</th>
+      </tr>
+    </thead>
+  <tbody>
+    <% for(let key in urls) { %>
+      <tr>
+      <td ><%= key %></td>
+      <td ><%= urls[key] %></td>
+      <td>
+        <form method="POST" action="/urls/<%= key %>/delete">
+          <input type="submit" value="Delete" />
+        </form>
+      </td>
+      <td>
+        <a href="/urls/<%= key %>">Edit</a>
+<!--       <td>
+        <form method="GET" action="/urls/<%= key %>">
+          <input type="submit" value="Edit" />
+      </td> -->
+    <% } %>
+      </tr>
+  </tbody>
+</table>
+<a href="/urls/new">Shorten your URL today!!</a>
 </body>
 </html>
-
-
 
