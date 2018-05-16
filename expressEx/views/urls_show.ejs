@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <%- include partials/_header.ejs %>
+  <% include partials/_header.ejs %>
 </head>
 <body>
   <h1>Edit your URL here my dude!</h1>
@@ -11,7 +11,7 @@
 
   <form method="POST" action="/urls/<%= shortURL %>">
     <label for="name">URL: </label>
-      <input id="name" name="longURL" type="text" value="<%= shortURL %>" />
+      <input id="name" name="longURL" type="text" value="https://" />
       <input type="submit" value="Update" />
   </form>
 </body>
