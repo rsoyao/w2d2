@@ -1,19 +1,42 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
+const bodyParser = require("body-parser");
+
+function generateRandomString() {
+  var input = '';
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+
+  for (var i = 0; i < 6; i++)
+    input += possible.charAt(Math.floor(Math.random() * possible.length));
+  return input;
+}
+console.log(generateRandomString());
 
 app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
-  "a": "b",
-  "hello": "world"
+  "3rf9Df": "http://facebook.com"
 };
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  var a = req.body.longURL;
+  var b = generateRandomString();
+  urlDatabase[b] = a;
+  console.log(urlDatabase);  // debug statement to see POST parameters
+  res.redirect('/urls' + b)        // Respond with 'Ok' (we will replace this)
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -34,6 +57,14 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.listen(PORT, () => {
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+app.listen(PORT,() => {
+    if(err) {
+    throw new Error('Failed to start server on localhost:8080!')
+  }
   console.log(`Example app listening on port ${PORT}!`);
 });
