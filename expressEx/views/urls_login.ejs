@@ -1,0 +1,21 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+   <title>Main Login Page</title>
+ </head>
+ <body>
+  <% if (!user_id) { %>
+    <form method="POST" action="/login">
+    <label for="name">Login!</label>
+    <input id="username" name="username" type="text" placeholder="email" />
+    <input id="password" name="password" type="text" placeholder="password" />
+    <input type="submit" value="Login" />
+  </form>
+<% } else { %>
+    <form method="POST" action="/logout">
+    <label for="name">Logout</label>
+    <input type="submit" value="Logout"/>
+  </form>
+<% } %>
+ </body>
+ </html>

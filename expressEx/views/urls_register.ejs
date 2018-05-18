@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <% include partials/_header.ejs %>
+</head>
+<body>
+<h1>Signup today</h1>
+<form method="POST" action="/register">
+  <p>
+    <label>Email</label>
+    <input type="email" name="email" />
+  </p>
+  <p>
+    <label>Password</label>
+    <input type="password" name="password" />
+  </p>
+  <p>
+    <input type="submit" name="Signup" value="Create Account"/>
+  </p>
+</form>
+</body>
