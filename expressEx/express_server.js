@@ -130,20 +130,36 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/login", (req, res) => {
    let templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"]};
   res.render("urls_login", templateVars);
-})
+});
 
 // Cookies - LOGIN with username
 app.post("/login", (req, res) => {
-  const user_id = req.body.username //was userN before. change it back if it doesn't work //
-  console.log('meep', req.body);
+  let username = req.body.username
+  let password = req.body.password
+  console.log(req.body.username)
+  if (username)
+  for (name in users) {
+    if (username === users[name].email) {
+      if(bcrypt.compareSync(password, users[name].password) ) {
+        req.session.id = users[name].id
+          res.redirect('/urls')
+          return;
+      } else {
+        res.status(403).send ('Oops! Looks like you entered the wrong password!')
+      return;
+      }
+    }
+  }
+  res.status(403).send('Are you sure you entered in your username and password correctly?')
   res.cookie("user_id", user_id)
   res.redirect("/urls");
 });
 
+
 //LOGOUT
 app.post("/logout", (req, res) => {
-  const userN = req.body.username
-  res.clearCookie("user_id", )
+  // const userN = req.body.username
+  res.clearCookie("user_id")
   res.redirect("/urls");
 });
 
