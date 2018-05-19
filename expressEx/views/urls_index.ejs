@@ -4,10 +4,6 @@
   <% include partials/_header.ejs %>
 </head>
 <body>
-</br>
-<a href="/register">Register</a>
-</br>
-<a href="/login">Login</a>
   <h1>A List of URL's for your viewing pleasure</h1>
   <table>
     <thead>
@@ -22,6 +18,7 @@
       <td ><%= key %></td>
       <td ><%= urls[key] %></td>
       <td>
+
         <form method="POST" action="/urls/<%= key %>/delete">
           <input type="submit" value="Delete" />
         </form>

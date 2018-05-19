@@ -2,21 +2,34 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-var cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
+const bcrypt = require('bcrypt');
+const password = "purple-monkey-dinosaur";
+const hashedPassword = bcrypt.hashSync(password, 10);
+
 
 function generateRandomString() {
   var input = '';
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 
   for (var i = 0; i < 6; i++)
-    input += possible.charAt(Math.floor(Math.random() * possible.length));
+    input += possible.charAt(Math.floor(Math.random() * possible.length)); // pushing the numbers into the emptt array
   return input;
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "3rf9Df": "http://facebook.com"
+  "b2xVn2": {
+    url:"http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    url:"http://www.google.com",
+    userID: "userRandomID"
+  },
+  "3rf9Df": {
+    url:"http://facebook.com",
+    userID: "userRandomID"
+  }
 };
 
 const users = {
@@ -39,11 +52,14 @@ const users = {
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["dogsandcars"],
+}))
 
 // Index - URL List
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"]};
+  let templateVars = { urls: urlDatabase, user_id: req.session["user_id"]};
   res.render("urls_index", templateVars);
 });
 
@@ -55,7 +71,7 @@ app.get("/urls", (req, res) => {
 
 //Register Link
 app.get("/register", (req, res) => {
-   let templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"]};
+   let templateVars = { urls: urlDatabase, user_id: req.session["user_id"]};
   res.render("urls_register", templateVars);
 });
 
@@ -63,7 +79,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
 const newEmail = req.body.email;
 const newPass = req.body.password;
-let cookie = req.cookies["user-id"]
+let cookie = req.session["user-id"]
 const randomID = generateRandomString();
 if (newEmail === "" || newPass === "") {
   res.status(400).send("Cmon man, put something in!")
@@ -79,7 +95,7 @@ newID = {
   email: newEmail ,
   password: newPass
 }
-  res.cookie("user_id", cookie);
+  req.session("user_id", cookie); // changed from res.cookie
   res.redirect("/urls")
 });
 
@@ -119,16 +135,15 @@ app.post("/urls/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   const long = urlDatabase[id];
-
+if (users)
   if (long) {
     delete urlDatabase[id];
   }
-
   res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
-   let templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"]};
+   let templateVars = { urls: urlDatabase, user_id: req.session["user_id"]};
   res.render("urls_login", templateVars);
 });
 
@@ -151,7 +166,7 @@ app.post("/login", (req, res) => {
     }
   }
   res.status(403).send('Are you sure you entered in your username and password correctly?')
-  res.cookie("user_id", user_id)
+  req.session("user_id", user_id); //changed from res.cookie
   res.redirect("/urls");
 });
 
@@ -159,19 +174,23 @@ app.post("/login", (req, res) => {
 //LOGOUT
 app.post("/logout", (req, res) => {
   // const userN = req.body.username
-  res.clearCookie("user_id")
+  req.session = null; // clear session?
   res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
+  if (users[req.session.id]) {
   let templateVars = {
-  user_id: req.cookies["user_id"]};
+  user_id: req.session["user_id"]};
   res.render("urls_new", templateVars);
+} else {
+  res.redirect("/login")
+}
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id],
-   user_id: req.cookies["user_id"]};
+   user_id: req.session["user_id"]};
   res.render("urls_show", templateVars);
 });
 
