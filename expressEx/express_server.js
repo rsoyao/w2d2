@@ -7,13 +7,15 @@ const bcrypt = require('bcrypt');
 
 //middleware
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieSession({
   name: 'session',
   secret: "Blue-dinosausrs"
 }));
 
- //hardcoded database
+//hardcoded database
 var urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -30,22 +32,22 @@ const users = {
 
 };
 
- // random user ID
+// random user ID
 function generateRandomString() {
   let randomString = "";
   let newString = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for(var i = 0; i < 5; i++) {
+  for (var i = 0; i < 5; i++) {
     var random = Math.floor(Math.random() * newString.length - 1);
     randomString += newString[random];
   }
   return randomString;
 }
 
- // add user ID to DB
+// add user ID to DB
 function urlsForUser(id) {
   var userURL = {};
-  for(key in urlDatabase) {
-    if(urlDatabase[key].userId === id) {
+  for (key in urlDatabase) {
+    if (urlDatabase[key].userId === id) {
       userURL[key] = urlDatabase[key];
     }
   }
@@ -56,7 +58,7 @@ function urlsForUser(id) {
 
 // List all urls in user database
 app.get("/urls", (req, res) => {
-  if(req.session) {
+  if (req.session) {
     var templateVars = {
       urls: urlsForUser(req.session.id),
       user: users[req.session.id],
@@ -69,11 +71,11 @@ app.get("/urls", (req, res) => {
   }
 });
 
- // New url
+// New url
 app.get("/urls/new", (req, res) => {
   if (users[req.session.id]) {
     let templateVars = {
-      user : users[req.session.id]
+      user: users[req.session.id]
     };
     res.render("urls_new", templateVars);
   } else {
@@ -88,11 +90,11 @@ app.get('/register', (req, res) => {
 
 // Display the shortURL and longURL
 app.get("/urls/:id", (req, res) => {
-  if(req.session && req.session.id && urlDatabase[req.params.id].userId === req.session.id) {
+  if (req.session && req.session.id && urlDatabase[req.params.id].userId === req.session.id) {
     let templateVars = {
       shortURL: req.params.id,
       urls: urlDatabase,
-      user : users[req.session.id]
+      user: users[req.session.id]
     };
     res.render("urls_show", templateVars);
   } else if (req.session.id) {
@@ -130,7 +132,7 @@ app.post('/urls', (req, res) => {
   if (req.session.id) {
     urlDatabase[generateRandomString()] = {
       longURL: req.body.longURL,
-      userId:req.session.id
+      userId: req.session.id
     };
   }
   res.redirect('/urls');
@@ -166,8 +168,8 @@ app.post("/login", (req, res) => {
   for (var id in users) {
     console.log(users[id].email, bcrypt.compareSync(password, hashedPassword));
     if (userName === users[id].email && bcrypt.compareSync(password, hashedPassword)) {
-            req.session.id = id;
-            console.log(req.session.user_id);
+      req.session.id = id;
+      console.log(req.session.user_id);
       return res.redirect("/urls");
     }
   }
@@ -180,10 +182,10 @@ app.post("/login", (req, res) => {
 app.post('/register', (req, res) => {
   const newEmail = req.body.email;
   const newPassword = bcrypt.hashSync(req.body.password, 10);
-  if(req.body.password.length > 0 && newEmail.length > 0 && newPassword.length > 0 ) {
-    for(key in users) {
-      if(users[key].email === newEmail) {
-        return res.status(400).send ('THIS EMAIL IS CURRENTLY REGISTERED!');
+  if (req.body.password.length > 0 && newEmail.length > 0 && newPassword.length > 0) {
+    for (key in users) {
+      if (users[key].email === newEmail) {
+        return res.status(400).send('THIS EMAIL IS CURRENTLY REGISTERED!');
       }
     }
     let newId = generateRandomString();
@@ -197,7 +199,7 @@ app.post('/register', (req, res) => {
     console.log(users);
     return res.redirect('/urls');
   } else {
-    res.status(400).send ('YOU MISSED A STEP!');
+    res.status(400).send('YOU MISSED A STEP!');
   }
 
 });
